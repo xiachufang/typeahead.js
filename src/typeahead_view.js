@@ -81,7 +81,9 @@ var TypeaheadView = (function() {
     .on('suggestionsRendered', this._updateHint)
     .on('opened', this._updateHint)
     .on('closed', this._clearHint)
-    .on('opened closed', this._propagateEvent);
+    .on('opened closed', this._propagateEvent)
+    .on('beforeRenderCompleted', this.beforeSuggestionsRenderCompleted);
+
 
     this.inputView = new InputView({ input: $input, hint: $hint })
     .on('focused', this._openDropdown)
@@ -264,6 +266,11 @@ var TypeaheadView = (function() {
 
     _propagateEvent: function(e) {
       this.eventBus.trigger(e.type);
+    },
+
+    beforeSuggestionsRenderCompleted: function(e) {
+      var query = this.inputView.getQuery();
+      this.eventBus.trigger('beforeRender', query, e.data);
     },
 
     // public methods

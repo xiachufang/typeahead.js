@@ -818,7 +818,9 @@
                     $suggestionsList = $(html.suggestionsList).css(css.suggestionsList);
                     $dataset = $("<div></div>").addClass(datasetClassName).append(dataset.header).append($suggestionsList).append(dataset.footer).appendTo(this.$menu);
                 }
-                if (suggestions.length > 0) {
+                this.trigger("beforeRenderCompleted", $dataset);
+                var openAlways = !!$dataset.find(".tt-custom-footer").size();
+                if (openAlways || suggestions.length > 0) {
                     this.isEmpty = false;
                     this.isOpen && this._show();
                     elBuilder = document.createElement("div");
@@ -834,7 +836,8 @@
                         fragment.appendChild($el[0]);
                     });
                     $dataset.show().find(".tt-suggestions").html(fragment);
-                } else {
+                }
+                if (!openAlways & suggestions.length === 0) {
                     this.clearSuggestions(dataset.name);
                 }
                 this.trigger("suggestionsRendered");
@@ -910,7 +913,7 @@
             $hint = this.$node.find(".tt-hint");
             this.dropdownView = new DropdownView({
                 menu: $menu
-            }).on("suggestionSelected", this._handleSelection).on("cursorMoved", this._clearHint).on("cursorMoved", this._setInputValueToSuggestionUnderCursor).on("cursorRemoved", this._setInputValueToQuery).on("cursorRemoved", this._updateHint).on("suggestionsRendered", this._updateHint).on("opened", this._updateHint).on("closed", this._clearHint).on("opened closed", this._propagateEvent);
+            }).on("suggestionSelected", this._handleSelection).on("cursorMoved", this._clearHint).on("cursorMoved", this._setInputValueToSuggestionUnderCursor).on("cursorRemoved", this._setInputValueToQuery).on("cursorRemoved", this._updateHint).on("suggestionsRendered", this._updateHint).on("opened", this._updateHint).on("closed", this._clearHint).on("opened closed", this._propagateEvent).on("beforeRenderCompleted", this.beforeSuggestionsRenderCompleted);
             this.inputView = new InputView({
                 input: $input,
                 hint: $hint
@@ -1018,6 +1021,10 @@
             },
             _propagateEvent: function(e) {
                 this.eventBus.trigger(e.type);
+            },
+            beforeSuggestionsRenderCompleted: function(e) {
+                var query = this.inputView.getQuery();
+                this.eventBus.trigger("beforeRender", query, e.data);
             },
             destroy: function() {
                 this.inputView.destroy();
