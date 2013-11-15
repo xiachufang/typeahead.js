@@ -82,7 +82,7 @@ var TypeaheadView = (function() {
     .on('opened', this._updateHint)
     .on('closed', this._clearHint)
     .on('opened closed', this._propagateEvent)
-    .on('beforeRenderCompleted', this.beforeSuggestionsRenderCompleted);
+    .on('suggestionsRendered', this.suggestionsRendered);
 
 
     this.inputView = new InputView({ input: $input, hint: $hint })
@@ -268,13 +268,13 @@ var TypeaheadView = (function() {
       this.eventBus.trigger(e.type);
     },
 
-    beforeSuggestionsRenderCompleted: function(e) {
-      var query = this.inputView.getQuery();
-      this.eventBus.trigger('beforeRender', query, e.data);
-    },
 
     // public methods
     // --------------
+    suggestionsRendered: function() {
+      // customized func on any change of hint
+      this.eventBus.trigger('onchange');
+    },
 
     destroy: function() {
       this.inputView.destroy();

@@ -220,12 +220,11 @@ var DropdownView = (function() {
         .appendTo(this.$menu);
       }
 
-      this.trigger('beforeRenderCompleted', $dataset);
 
-      var openAlways = !!$dataset.find('.tt-custom-footer').size();
+      var alwaysVisiable = dataset.alwaysVisiable;
 
       // suggestions to be rendered
-      if (openAlways || suggestions.length > 0) {
+      if (alwaysVisiable || suggestions.length > 0) {
         this.isEmpty = false;
         this.isOpen && this._show();
 
@@ -254,11 +253,11 @@ var DropdownView = (function() {
       }
 
       // no suggestions to render
-      if (!openAlways & suggestions.length === 0) {
+      if (!alwaysVisiable & suggestions.length === 0) {
         this.clearSuggestions(dataset.name);
       }
-
       this.trigger('suggestionsRendered');
+
     },
 
     clearSuggestions: function(datasetName) {
